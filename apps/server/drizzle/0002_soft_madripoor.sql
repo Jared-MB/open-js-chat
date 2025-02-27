@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "externalId" text DEFAULT '' NOT NULL;
