@@ -13,7 +13,7 @@ export function Sidebar() {
 					<h1 className="text-xl font-bold flex items-center gap-2">
 						<Button asChild size="icon" variant="outline">
 							<Link
-								href="https://github.com/Jared-MB/open-js-chat-client"
+								href="https://github.com/Jared-MB/open-js-chat"
 								target="_blank"
 								rel="noreferrer noopener"
 							>
