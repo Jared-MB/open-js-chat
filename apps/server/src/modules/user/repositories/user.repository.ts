@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { db } from 'src/db/connection';
-import * as schema from 'src/db/schema'
+import { users } from 'src/db/schema/users'
 import { CreateUserDto } from '../dtos/user.dto';
 
 @Injectable()
@@ -10,19 +10,19 @@ export class UserRepository {
     private db = db
 
     async findAll() {
-        return await this.db.select().from(schema.users)
+        return await this.db.select().from(users)
     }
 
     async findById(userId: string) {
-        return await this.db.select().from(schema.users).where(eq(schema.users.id, userId))
+        return await this.db.select().from(users).where(eq(users.id, userId))
     }
 
-    async findByExternalId(externalId: string) {
-        return await this.db.select().from(schema.users).where(eq(schema.users.externalId, externalId))
+    async findByEmail(email: string) {
+        return await this.db.select().from(users).where(eq(users.email, email))
     }
 
-    async create({ name, externalId }: CreateUserDto) {
-        return await this.db.insert(schema.users).values({ name, externalId }).returning()
+    async create({ nickname = '', ...rest }: CreateUserDto) {
+        return await this.db.insert(users).values({ nickname, ...rest }).returning()
     }
 
     async exists(userId: string) {
@@ -30,8 +30,8 @@ export class UserRepository {
         return user.length > 0
     }
 
-    async existsByExternalId(externalId: string) {
-        const user = await this.findByExternalId(externalId)
+    async existsByEmail(email: string) {
+        const user = await this.findByEmail(email)
         return user.length > 0
     }
 

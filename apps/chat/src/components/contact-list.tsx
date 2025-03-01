@@ -88,7 +88,7 @@ export function ContactList() {
 					/>
 				</div>
 			</header>
-			<ScrollArea className="h-[calc(100dvh-9rem)]">
+			<ScrollArea className="h-[calc(100dvh-13rem)]">
 				<div className="px-2 w-96 max-h-full">
 					{filteredContacts.map((contact) => (
 						<Link

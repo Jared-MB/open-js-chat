@@ -1,31 +1,40 @@
 import { BadRequestException, Body, Controller, Get, Param, Post, UseInterceptors, } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { ResponseInterceptor } from 'src/interceptors/response.interceptor';
+import { CreateUserDto, UserDto } from '../dtos/user.dto';
+import { AuthService } from 'src/services/auth.service';
 
+@UseInterceptors(ResponseInterceptor)
 @Controller('user')
 export class UserController {
 
     constructor(
         private readonly userRepository: UserRepository,
+        private readonly authService: AuthService,
     ) { }
 
-    @UseInterceptors(ResponseInterceptor)
     @Get(':id')
     async getUser(@Param('id') id: string) {
-        const user = await this.userRepository.findByExternalId(id)
+        const user = await this.userRepository.findById(id)
         return user
     }
 
-    @UseInterceptors(ResponseInterceptor)
     @Post()
-    async createUser(@Body() body: any) {
-        const isUserCreated = await this.userRepository.existsByExternalId(body.externalId)
-        if (isUserCreated) {
-            throw new BadRequestException('User already exists')
+    async createUser(@Body() body: CreateUserDto & { access_token: string }) {
+        const payload = await this.authService.decodeToken(body.access_token)
+        const googleId = String(payload.sub)
+
+        const isUserCreated = await this.userRepository.findByEmail(body.email)
+
+        let user: UserDto | null = null
+        if (isUserCreated.length === 0) {
+            const userCreated = await this.userRepository.create({ ...body, googleId })
+            user = userCreated[0]
         }
 
-        const user = await this.userRepository.create(body.user)
-        return user
+        user = isUserCreated[0]
+
+
     }
 
 }

@@ -4,37 +4,30 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Paperclip, Send, Smile } from "lucide-react";
 import { Input } from "./ui/input";
-import { useChatStore } from "@/store/chat";
 
-import { format } from "@formkit/tempo";
-import { useParams } from "next/navigation";
+import { useSocket } from "@/hooks/useSocket";
+import { useSession } from "next-auth/react";
 
 export function InputMessage() {
-	const { username } = useParams();
+	const { emit } = useSocket();
+	const { data: session } = useSession();
 
 	const [input, setInput] = useState("");
-	const { addMessage, messages } = useChatStore();
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		addMessage({
-			sender: "You",
+
+		if (!session) {
+			console.log("No session");
+			return;
+		}
+
+		emit("message", {
+			userEmail: session.user?.email,
+			to: window.localStorage.getItem("otherUserEmail"),
 			message: input,
-			time: format(new Date(), "h:mm A"),
-			isUser: true,
-			id: (messages.length + 1).toString(),
 		});
-		setTimeout(() => {
-			addMessage({
-				sender:
-					username?.toString().split("-")[0].replaceAll("%20", " ") ?? "You",
-				avatar: "/placeholder.svg?height=40&width=40",
-				message: "Hey there! How's it going?",
-				time: format(new Date(), "h:mm A"),
-				isUser: false,
-				id: (messages.length + 2).toString(),
-			});
-		}, 1000);
+
 		setInput("");
 	};
 

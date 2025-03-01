@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ContactList } from "@/components/contact-list";
 import Link from "next/link";
+import { UserProfile } from "./user-profile";
 
 export function Sidebar() {
 	return (
@@ -27,6 +28,7 @@ export function Sidebar() {
 					</Button>
 				</header>
 				<ContactList />
+				<UserProfile />
 			</aside>
 			<Sheet>
 				<SheetTrigger asChild>

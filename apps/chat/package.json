@@ -19,8 +19,10 @@
     "clsx": "2.1.1",
     "lucide-react": "0.476.0",
     "next": "15.2.0",
+    "next-auth": "5.0.0-beta.25",
     "react": "0.0.0-experimental-ebc22ef7-20250225",
     "react-dom": "0.0.0-experimental-ebc22ef7-20250225",
+    "socket.io-client": "^4.8.1",
     "tailwind-merge": "3.0.2",
     "tailwindcss-animate": "1.0.7",
     "zustand": "5.0.3"
