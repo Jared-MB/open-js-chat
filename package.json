@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "turbo run dev"
+    "dev": "turbo run dev",
+    "start:server": "pnpm --filter apps/server start",
+    "build:server": "pnpm --filter apps/server build"
   },
   "keywords": [],
   "author": "",
