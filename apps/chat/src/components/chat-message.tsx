@@ -1,5 +1,9 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
+import type { Message } from "./chat";
+import { format } from "@formkit/tempo";
 
 export interface ChatMessageProps {
 	sender: string;
@@ -10,18 +14,16 @@ export interface ChatMessageProps {
 	image?: string;
 }
 
-export default function ChatMessage({
-	sender,
-	message,
-	time,
-	isUser,
-	avatar,
-	image,
-}: ChatMessageProps) {
-	const initials = sender
-		.split(" ")
-		.map((n) => n[0])
-		.join("");
+export function ChatMessage({ to, text, date, read, from, id }: Message) {
+	// const initials = sender
+	// 	.split(" ")
+	// 	.map((n) => n[0])
+	// 	.join("");
+
+	const isUser = from === "";
+	const avatar = "";
+	const image = "";
+	const initials = "";
 
 	return (
 		<div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
@@ -30,7 +32,7 @@ export default function ChatMessage({
 			>
 				{!isUser && (
 					<Avatar className="h-8 w-8">
-						<AvatarImage src={avatar} alt={sender} />
+						<AvatarImage src={avatar} alt={from} />
 						<AvatarFallback>{initials}</AvatarFallback>
 					</Avatar>
 				)}
@@ -38,7 +40,7 @@ export default function ChatMessage({
 					<div
 						className={`rounded-lg p-3 ${isUser ? "bg-primary text-primary-foreground" : "bg-muted"}`}
 					>
-						{message && <p className="text-sm">{message}</p>}
+						{text && <p className="text-sm">{text}</p>}
 						{image && (
 							<div className="mt-2 overflow-hidden rounded-md">
 								<Image
@@ -51,7 +53,13 @@ export default function ChatMessage({
 							</div>
 						)}
 					</div>
-					<p className="text-xs text-muted-foreground mt-1">{time}</p>
+					<p className="text-xs text-muted-foreground mt-1">
+						{format({
+							date,
+							format: "h:mm a",
+							tz: "America/Mexico_City",
+						})}
+					</p>
 				</div>
 			</div>
 		</div>

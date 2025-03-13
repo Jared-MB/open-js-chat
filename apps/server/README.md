@@ -25,11 +25,14 @@ $ pnpm run start:prod
 
 The database is managed by [Drizzle](https://drizzle.org/) using PostgreSQL.
 
-Add the following environment variables to your `.env` file replacing the values with your own:
+Add the following environment variables to your `.env` file replacing the values with your own credentials:
 
 ```bash
 DATABASE_URL=postgres://<user>:<password>@<host>:<port>/<database>
 ```
+
+> [!TIP]
+> Usually the default values are **postgres** for user, **5432** for port and **localhost** for host on a local development environment.
 
 Now you can generate the migrations and apply them to your database:
 

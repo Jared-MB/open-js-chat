@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { and, eq, or } from 'drizzle-orm';
 import { db } from 'src/db/connection';
-import * as schema from 'src/db/schema';
+import { messages } from 'src/db/schema/messages';
 
 @Injectable()
 export class MessageRepository {
@@ -10,39 +10,39 @@ export class MessageRepository {
     async findAllByUser(userId: string) {
         return await this.db
             .select()
-            .from(schema.messages)
+            .from(messages)
             .where(
                 or(
-                    eq(schema.messages.ownerId, userId),
-                    eq(schema.messages.receptorId, userId),
+                    eq(messages.from, userId),
+                    eq(messages.to, userId),
                 ),
             );
     }
 
-    async findAllByReceptor(userId: string, receptorId: string) {
+    async findAllByReceptor(userId: string, to: string) {
         return await this.db
             .select()
-            .from(schema.messages)
+            .from(messages)
             .where(
                 or(
                     and(
-                        eq(schema.messages.ownerId, userId),
-                        eq(schema.messages.receptorId, receptorId),
+                        eq(messages.from, userId),
+                        eq(messages.to, to),
                     ),
                     and(
-                        eq(schema.messages.ownerId, receptorId),
-                        eq(schema.messages.receptorId, userId),
+                        eq(messages.from, to),
+                        eq(messages.to, userId),
                     ),
                 )
             );
     }
 
-    async create({ ownerId, receptorId, text }) {
+    async create({ from, to, text }) {
         return await this.db
-            .insert(schema.messages)
+            .insert(messages)
             .values({
-                ownerId,
-                receptorId,
+                from,
+                to,
                 text,
             })
             .returning();

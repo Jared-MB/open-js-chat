@@ -1,11 +1,5 @@
-import type { UUID } from "node:crypto";
+import { users } from "src/db/schema/users"
 
-export class CreateUserDto {
-    name: string
-    externalId: string
-}
+export type CreateUserDto = typeof users.$inferInsert
 
-export class UserDto extends CreateUserDto {
-    id: UUID;
-}
-
+export type UserDto = typeof users.$inferSelect

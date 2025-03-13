@@ -1,0 +1,25 @@
+{
+  "name": "openjs-chat",
+  "version": "1.0.0",
+  "type": "module",
+  "keywords": [],
+  "license": "MIT",
+  "exports": {
+    "./react": {
+      "types":"./src/react/index.ts",
+      "default": "./dist/react/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "socket.io-client": "4.8.1",
+     "react": "^19"
+  },
+  "devDependencies": {
+    "typescript": "5.8.2",
+    "@openjs-chat/typescript-config": "workspace:*"
+  }
+}

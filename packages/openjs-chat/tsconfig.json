@@ -1,0 +1,14 @@
+{
+    "extends": "@openjs-chat/typescript-config/base.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "rootDir": "src",
+        "baseUrl": ".",
+        "paths": {
+            "@openjs-chat/react/*": ["src/react/src/*"]
+        },
+        "jsx": "react-jsx"
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"]
+}

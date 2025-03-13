@@ -17,12 +17,14 @@ interface Contact {
 	time: string;
 	unread: number;
 	online: boolean;
+	email: string;
 }
 
 const contacts: Contact[] = [
 	{
 		id: "1",
 		name: "Jane Doe",
+		email: "amunozbaez668@gmail.com",
 		avatar: "/placeholder.svg?height=40&width=40",
 		lastMessage: "That looks amazing! I love the clean design.",
 		time: "10:40 AM",
@@ -32,42 +34,16 @@ const contacts: Contact[] = [
 	{
 		id: "2",
 		name: "John Smith",
+		email: "kristall.dev.pos@gmail.com",
 		avatar: "/placeholder.svg?height=40&width=40",
 		lastMessage: "Can we meet tomorrow to discuss the project?",
 		time: "Ayer",
 		unread: 2,
 		online: false,
 	},
-	{
-		id: "3",
-		name: "Sarah Johnson",
-		avatar: "/placeholder.svg?height=40&width=40",
-		lastMessage: "I've sent you the files you requested.",
-		time: "Ayer",
-		unread: 0,
-		online: true,
-	},
-	{
-		id: "4",
-		name: "Michael Brown",
-		avatar: "/placeholder.svg?height=40&width=40",
-		lastMessage: "Thanks for your help!",
-		time: "Lunes",
-		unread: 0,
-		online: false,
-	},
-	{
-		id: "5",
-		name: "Emily Davis",
-		avatar: "/placeholder.svg?height=40&width=40",
-		lastMessage: "Let's catch up soon!",
-		time: "Domingo",
-		unread: 0,
-		online: true,
-	},
 ];
 
-export function ContactList() {
+export function ContactList({ contacts }: { contacts: Contact[] }) {
 	const [searchQuery, setSearchQuery] = useState("");
 
 	const filteredContacts = contacts.filter((contact) =>
@@ -88,12 +64,12 @@ export function ContactList() {
 					/>
 				</div>
 			</header>
-			<ScrollArea className="h-[calc(100dvh-9rem)]">
+			<ScrollArea className="h-[calc(100dvh-13rem)]">
 				<div className="px-2 w-96 max-h-full">
 					{filteredContacts.map((contact) => (
 						<Link
 							key={contact.id}
-							href={`/chat/${contact.name}-${contact.id}`}
+							href={`/chat/${contact.email}`}
 							className="w-full text-left mb-1 p-3 rounded-lg transition-colors hover:bg-muted/50 inline-block"
 						>
 							<div className="flex items-center gap-3">
