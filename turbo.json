@@ -4,7 +4,15 @@
       "build": {
         "dependsOn": ["^build"],
         "outputs": [".next/**", "!.next/cache/**", "dist/**"],
-        "env": ["DATABASE_URL"]
+        "env": [
+          "DATABASE_URL", 
+          "SERVER_SECRET", 
+          "SERVER_API",
+          "NEXT_PUBLIC_SERVER_API",
+          "AUTH_GOOGLE_ID",
+          "AUTH_GOOGLE_SECRET",
+          "AUTH_SECRET"
+        ]
       },
       "check-types": {
         "dependsOn": ["^check-types"]
