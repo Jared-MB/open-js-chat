@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "turbo run dev",
-    "start:server": "pnpm --filter apps/server start",
-    "build:server": "pnpm --filter apps/server build"
+    "start:server": "pnpm --filter @openjs-chat/server start",
+    "build:server": "pnpm --filter @openjs-chat/server build"
   },
   "keywords": [],
   "author": "",
