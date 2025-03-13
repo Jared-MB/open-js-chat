@@ -22,6 +22,8 @@ export function Chat() {
 	const { data: session } = useSession();
 
 	const [messages, setMessages] = useState<Message[]>([]);
+	const [myId, setMyId] = useState<string>("");
+
 	const ref = useRef<HTMLDivElement>(null);
 
 	const { username } = useParams();
@@ -43,9 +45,16 @@ export function Chat() {
 			otherUserEmail: parsedUsername,
 		});
 
-		on("join", ({ messages: incomingMessages }: { messages: Message[] }) => {
-			setMessages(incomingMessages);
-		});
+		on(
+			"join",
+			({
+				messages: incomingMessages,
+				myId,
+			}: { messages: Message[]; myId: string }) => {
+				setMessages(incomingMessages);
+				setMyId(myId);
+			},
+		);
 
 		on("message", (message: Message) => {
 			setMessages((prev) => {
@@ -78,7 +87,7 @@ export function Chat() {
 		<ScrollArea className="flex-1 p-4 h-[calc(100dvh-10rem)]" ref={ref}>
 			<main className="space-y-4">
 				{messages.map((message) => (
-					<ChatMessage key={message.id} {...message} />
+					<ChatMessage key={message.id} {...message} email={myId} />
 				))}
 			</main>
 		</ScrollArea>

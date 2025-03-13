@@ -43,7 +43,7 @@ export class ChatGateway {
 
     const messages = await this.messageRepository.findAllByReceptor(user.id, otherUser.id);
 
-    socket.emit('join', { user, messages, otherUser });
+    socket.emit('join', { user, messages, otherUser, myId: user.id });
   }
 
   @SubscribeMessage('leave')

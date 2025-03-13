@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import type { Message } from "./chat";
 import { format } from "@formkit/tempo";
+import { useSession } from "next-auth/react";
 
 export interface ChatMessageProps {
 	sender: string;
@@ -14,13 +15,17 @@ export interface ChatMessageProps {
 	image?: string;
 }
 
-export function ChatMessage({ to, text, date, read, from, id }: Message) {
-	// const initials = sender
-	// 	.split(" ")
-	// 	.map((n) => n[0])
-	// 	.join("");
-
-	const isUser = from === "";
+export function ChatMessage({
+	to,
+	text,
+	date,
+	read,
+	from,
+	id,
+	email,
+}: Message & { email: string }) {
+	const isUser = from === email;
+	console.log({ from, email });
 	const avatar = "";
 	const image = "";
 	const initials = "";
