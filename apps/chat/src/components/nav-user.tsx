@@ -18,7 +18,6 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { login, logout } from "@/lib/auth";
-import SignIn from "./sign-in";
 import { Button } from "./ui/button";
 
 export function NavUser({
