@@ -1,19 +1,11 @@
 "use client";
 
-import {
-	BadgeCheck,
-	Bell,
-	ChevronsUpDown,
-	CreditCard,
-	LogOut,
-	Sparkles,
-} from "lucide-react";
+import { ChevronsUpDown, LogIn, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
@@ -25,7 +17,9 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { signOut } from "@/auth";
+import { login, logout } from "@/lib/auth";
+import SignIn from "./sign-in";
+import { Button } from "./ui/button";
 
 export function NavUser({
 	user,
@@ -77,15 +71,39 @@ export function NavUser({
 							</div>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<form onSubmit={async () => await signOut()}>
-							<DropdownMenuItem>
-								<LogOut />
-								Log out
+						<form action={logout}>
+							<DropdownMenuItem asChild>
+								<button type="submit" className="w-full">
+									<LogOut />
+									Log out
+								</button>
 							</DropdownMenuItem>
 						</form>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</SidebarMenuItem>
+		</SidebarMenu>
+	);
+}
+
+export function NavUserLogin() {
+	return (
+		<SidebarMenu>
+			<form action={login}>
+				<SidebarMenuItem>
+					<SidebarMenuButton
+						size="lg"
+						type="submit"
+						asChild
+						className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
+					>
+						<Button>
+							<LogIn />
+							Iniciar sesión
+						</Button>
+					</SidebarMenuButton>
+				</SidebarMenuItem>
+			</form>
 		</SidebarMenu>
 	);
 }
