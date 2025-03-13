@@ -47,6 +47,7 @@ cd open-js-chat
 pnpm install
 ```
 
+> [!IMPORTANT]
 > Each application has its own `README.md` for setup and configuration instructions.
 
 ### Running the Applications
@@ -58,6 +59,7 @@ To run **ALL** the applications in development mode, use the following commands:
 pnpm dev  # Runs all apps in development mode
 ```
 
+> [!NOTE]
 > **RECOMMENDED**: Use the `dev` command to run all apps in development mode. This ensures that all apps are built and run together, making development easier and faster.
 
 
