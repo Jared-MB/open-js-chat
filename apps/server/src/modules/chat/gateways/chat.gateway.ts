@@ -56,7 +56,7 @@ export class ChatGateway {
 
   @SubscribeMessage('message')
   async handleMessage(@MessageBody() body: { message: string, userEmail: string, to: string }, @ConnectedSocket() socket: Socket) {
-    const socketAuth = this.cookieService.getCookies(socket.handshake.headers.cookie)
+    // const socketAuth = this.cookieService.getCookies(socket.handshake.headers.cookie)
 
     console.log(socket.rooms)
 
