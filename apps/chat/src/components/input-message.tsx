@@ -40,9 +40,9 @@ export function InputMessage() {
 			onSubmit={handleSubmit}
 			className="border-t p-4 flex items-center gap-2 h-20"
 		>
-			<Button type="button" variant="ghost" size="icon">
+			{/* <Button type="button" variant="ghost" size="icon">
 				<Paperclip className="h-5 w-5" />
-			</Button>
+			</Button> */}
 			<Input
 				className="flex-1"
 				autoFocus
@@ -50,9 +50,9 @@ export function InputMessage() {
 				value={input}
 				onChange={(e) => setInput(e.target.value)}
 			/>
-			<Button type="button" variant="ghost" size="icon">
+			{/* <Button type="button" variant="ghost" size="icon">
 				<Smile className="h-5 w-5" />
-			</Button>
+			</Button> */}
 			<Button type="submit" size="icon" disabled={!input.trim()}>
 				<Send className="h-5 w-5" />
 			</Button>
