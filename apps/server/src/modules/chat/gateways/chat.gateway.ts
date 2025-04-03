@@ -39,7 +39,17 @@ export class ChatGateway {
     console.log(roomId)
 
     const user = await this.userRepository.findOne({ email: body.userEmail });
+
+    if (user.isBanned) {
+      socket.leave(roomId);
+      return
+    }
+
     const otherUser = await this.userRepository.findOne({ email: body.otherUserEmail });
+    if (otherUser.isBanned) {
+      socket.leave(roomId);
+      return
+    }
 
     const messages = await this.messageRepository.findAllByReceptor(user.id, otherUser.id);
 
@@ -63,13 +73,18 @@ export class ChatGateway {
     const user = await this.userRepository.findOne({ email: body.userEmail })
     const otherUser = await this.userRepository.findOne({ email: body.to })
 
+    const roomId = this.getUsersRoom(body.userEmail, body.to);
+
+    if (user.isBanned || otherUser.isBanned) {
+      socket.leave(roomId);
+      return
+    }
+
     if (!user || !otherUser) {
       return
     }
 
     const message = await this.messageRepository.create({ text: body.message, from: user.id, to: otherUser.id });
-
-    const roomId = this.getUsersRoom(body.userEmail, body.to);
 
     this.server.to(roomId).emit('message', message[0]);
   }

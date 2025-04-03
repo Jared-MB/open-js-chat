@@ -6,8 +6,12 @@
   "license": "MIT",
   "exports": {
     "./react": {
-      "types":"./src/react/index.ts",
+      "types": "./src/react/index.ts",
       "default": "./dist/react/index.js"
+    },
+    ".": {
+      "types": "./src/vanilla/index.ts",
+      "default": "./dist/vanilla/index.js"
     }
   },
   "scripts": {
@@ -15,11 +19,12 @@
     "build": "tsc"
   },
   "dependencies": {
+    "react": "^19",
     "socket.io-client": "4.8.1",
-     "react": "^19"
+    "zustand": "5.0.3"
   },
   "devDependencies": {
-    "typescript": "5.8.2",
-    "@openjs-chat/typescript-config": "workspace:*"
+    "@openjs-chat/typescript-config": "workspace:*",
+    "typescript": "5.8.2"
   }
 }

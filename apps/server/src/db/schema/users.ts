@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, text, uuid, timestamp, boolean } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm';
 
 import { messages } from './messages';
@@ -13,6 +13,7 @@ export const users = pgTable('users', {
     nickname: text().notNull(),
     status: text().default('offline'),
     lastActive: timestamp({ mode: 'date' }).defaultNow(),
+    isBanned: boolean().default(false),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
