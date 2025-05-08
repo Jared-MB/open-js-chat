@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "turbo run dev",
     "start:server": "pnpm --filter @openjs-chat/server start",
-    "build:server": "pnpm --filter @openjs-chat/server build"
+    "build:server": "pnpm --filter @openjs-chat/server build",
+    "ui": "pnpm --filter @openjs-chat/client ui"
   },
   "keywords": [],
   "author": "",
