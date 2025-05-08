@@ -9,6 +9,7 @@ import "./globals.css";
 import { auth } from "@/auth";
 import { SocketProvider } from "openjs-chat/react";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { Suspense } from "react";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
 	},
 };
 
-export default async function RootLayout({
+async function RootLayoutContent({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
@@ -62,5 +63,17 @@ export default async function RootLayout({
 				</SocketProvider>
 			</body>
 		</html>
+	);
+}
+
+export default async function RootLayout({
+	children,
+}: Readonly<{
+	children: React.ReactNode;
+}>) {
+	return (
+		<Suspense>
+			<RootLayoutContent>{children}</RootLayoutContent>
+		</Suspense>
 	);
 }
