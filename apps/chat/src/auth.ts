@@ -19,8 +19,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     events: {
         signIn: async ({ user, account }) => {
 
-            console.log({ account: account?.id_token })
-
             const response = await fetch(`${process.env.SERVER_API}/user`, {
                 method: "POST",
                 headers: {
@@ -35,7 +33,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }),
             });
 
-            const data = await response.json();
+            await response.json();
         },
     }
 })
