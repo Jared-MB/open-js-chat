@@ -1,10 +1,11 @@
 "use client";
 
+import type { Message as M } from "../interfaces";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
-import type { Message } from "./chat";
 import { format } from "@formkit/tempo";
-import { useSession } from "next-auth/react";
+import { motion } from "motion/react";
 
 export interface ChatMessageProps {
 	sender: string;
@@ -15,7 +16,7 @@ export interface ChatMessageProps {
 	image?: string;
 }
 
-export function ChatMessage({
+export function Message({
 	to,
 	text,
 	date,
@@ -23,15 +24,29 @@ export function ChatMessage({
 	from,
 	id,
 	email,
-}: Message & { email: string }) {
+}: M & { email: string }) {
 	const isUser = from === email;
-	console.log({ from, email });
 	const avatar = "";
 	const image = "";
 	const initials = "";
 
 	return (
-		<div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+		<motion.div
+			initial={{
+				opacity: 0,
+				translateX: -10,
+			}}
+			animate={{
+				opacity: 1,
+				translateX: 0,
+			}}
+			transition={{
+				duration: 0.2,
+				ease: "easeInOut",
+			}}
+			layout
+			className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+		>
 			<div
 				className={`flex ${isUser ? "flex-row-reverse" : "flex-row"} max-w-[80%] gap-2`}
 			>
@@ -67,6 +82,6 @@ export function ChatMessage({
 					</p>
 				</div>
 			</div>
-		</div>
+		</motion.div>
 	);
 }

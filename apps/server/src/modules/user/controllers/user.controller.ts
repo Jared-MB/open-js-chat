@@ -30,15 +30,17 @@ export class UserController {
         const payload = await this.authService.decodeToken(body.access_token)
         const googleId = String(payload.sub)
 
-        const isUserCreated = await this.userRepository.findOne({ email: body.email })
+        const user = await this.userRepository.findOne({ email: body.email })
 
-        let user: UserDto | null = null
-        if (!isUserCreated) {
-            const userCreated = await this.userRepository.create({ ...body, googleId })
-            user = userCreated[0]
+        if (!user) {
+            await this.userRepository.create({ ...body, googleId, avatar: payload.picture })
+            return
         }
 
-        user = isUserCreated[0]
+        if (!user.avatar) {
+            await this.userRepository.update(user.id, { avatar: payload.picture })
+            return
+        }
     }
 
 }

@@ -7,9 +7,11 @@ import { SessionProvider } from "next-auth/react";
 
 import "./globals.css";
 import { auth } from "@/auth";
-import { SocketProvider } from "openjs-chat/react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Suspense } from "react";
+import { Toaster } from "@/components/ui/sonner";
+
+import { SocketProvider } from "openjs-chat/react";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -53,7 +55,7 @@ async function RootLayoutContent({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased font-[family-name:var(--font-geist-sans)] flex h-screen w-full overflow-hidden`}
 			>
-				<SocketProvider url={process.env.SERVER_API ?? ""}>
+				<SocketProvider uri={`${process.env.SERVER_API}/chat`}>
 					<SessionProvider session={session}>
 						<SidebarProvider>
 							<Sidebar />
@@ -61,6 +63,7 @@ async function RootLayoutContent({
 						</SidebarProvider>
 					</SessionProvider>
 				</SocketProvider>
+				<Toaster />
 			</body>
 		</html>
 	);

@@ -1,0 +1,4 @@
+export const TAGS = {
+    CONTACTS: '__USER__CONTACTS__',
+    CONTACTS_REQUESTS: '__USER__CONTACTS_REQUESTS__'
+}

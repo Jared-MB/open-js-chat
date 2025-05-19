@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ChatGateway } from './gateways/chat.gateway';
-import { MessageRepository } from './repositories/message.repository';
-import { UserModule } from '../user/user.module';
+import { UserModule } from 'src/modules/user/user.module';
 import { CookieService } from 'src/services/cookie.service';
+
+import { ChatGateway } from './chat.gateway';
+import { MessageRepository } from './message.repository';
 
 @Module({
   imports: [UserModule],

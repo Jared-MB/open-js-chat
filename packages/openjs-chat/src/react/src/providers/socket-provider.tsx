@@ -3,14 +3,21 @@
 import { type Socket, io } from "socket.io-client";
 import { createContext, useEffect, useState } from "react";
 
+type SocketNamespace = "chat" | "contacts";
+
+type SocketURI = `${string}/${SocketNamespace}`;
+
 type SocketContextValue = Socket | null;
 
-export const SocketContext = createContext<SocketContextValue>(null);
+export const SocketContext = createContext<{
+	socket: SocketContextValue;
+	uri: SocketURI;
+} | null>(null);
 
 export const SocketProvider = ({
 	children,
-	url,
-}: { children: React.ReactNode; url: string }) => {
+	uri,
+}: { children: React.ReactNode; uri: SocketURI }) => {
 	const [socket, setSocket] = useState<SocketContextValue>(null);
 
 	const connect = (url: string) => {
@@ -27,16 +34,16 @@ export const SocketProvider = ({
 	};
 
 	useEffect(() => {
-		if (!url) {
-			console.error("No url provided");
+		if (!uri) {
+			console.error("No uri provided");
 		}
 
-		connect(url);
+		connect(uri);
 
 		return () => {
 			disconnect();
 		};
-	}, [url]);
+	}, [uri]);
 
-	return <SocketContext value={socket}>{children}</SocketContext>;
+	return <SocketContext value={{ socket, uri }}>{children}</SocketContext>;
 };

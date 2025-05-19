@@ -1,8 +1,11 @@
-import { Module } from '@nestjs/common';
-import { ChatModule } from './modules/chat/chat.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './modules/user/user.module';
+import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+
+import { WebsocketModule } from 'src/modules/websockets/websocket.module';
+import { UserModule } from './modules/user/user.module';
+import { ContactsModule } from './modules/contacts/contacts.module';
 
 @Module({
   imports: [
@@ -15,8 +18,18 @@ import { JwtModule } from '@nestjs/jwt';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
-    ChatModule,
+    EventEmitterModule.forRoot({
+      wildcard: false,
+      delimiter: '.',
+      newListener: false,
+      removeListener: false,
+      maxListeners: 10,
+      verboseMemoryLeak: false,
+      ignoreErrors: false,
+    }),
+    WebsocketModule,
     UserModule,
+    ContactsModule
   ],
 })
 export class AppModule { }

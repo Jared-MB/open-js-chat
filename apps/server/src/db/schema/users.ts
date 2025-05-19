@@ -13,6 +13,7 @@ export const users = pgTable('users', {
     nickname: text().notNull(),
     status: text().default('offline'),
     lastActive: timestamp({ mode: 'date' }).defaultNow(),
+    avatar: text(),
     isBanned: boolean().default(false),
 })
 

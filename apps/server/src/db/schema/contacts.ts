@@ -4,8 +4,8 @@ import { users } from './users';
 
 export const contacts = pgTable('contacts', {
     id: uuid().defaultRandom().primaryKey(),
-    userId: uuid().notNull().references(() => users.id),
-    contactId: uuid().notNull().references(() => users.id),
+    user: text().notNull().references(() => users.email),
+    contact: text().notNull().references(() => users.email),
     blockedByUser: boolean().default(false),
     blockedByContact: boolean().default(false),
     createdAt: timestamp({ mode: 'date' }).defaultNow(),
@@ -13,13 +13,13 @@ export const contacts = pgTable('contacts', {
 
 export const contactsRelations = relations(contacts, ({ one }) => ({
     user: one(users, {
-        fields: [contacts.userId],
-        references: [users.id],
+        fields: [contacts.user],
+        references: [users.email],
         relationName: 'userContacts'
     }),
     contact: one(users, {
-        fields: [contacts.contactId],
-        references: [users.id],
+        fields: [contacts.contact],
+        references: [users.email],
         relationName: 'contactOf'
     }),
 }))

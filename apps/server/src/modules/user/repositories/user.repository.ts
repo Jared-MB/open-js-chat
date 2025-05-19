@@ -39,4 +39,15 @@ export class UserRepository implements Repository<UserDto> {
     async create({ nickname = '', ...rest }: CreateUserDto) {
         return await this.db.insert(users).values({ nickname, ...rest }).returning()
     }
+
+    async update(id: string, data: Partial<Omit<UserDto, 'id' | 'email'>>) {
+        let KEY = 'id'
+
+        if (id.includes('@')) {
+            KEY = 'email'
+        }
+
+
+        return await this.db.update(users).set(data).where(eq(users[KEY], id)).returning()
+    }
 }

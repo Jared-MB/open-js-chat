@@ -1,8 +1,8 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
-import { MessageRepository } from '../repositories/message.repository';
-import { UserRepository } from '../../user/repositories/user.repository';
+import { MessageRepository } from './message.repository';
+import { UserRepository } from 'src/modules/user/repositories/user.repository';
 import { CookieService } from 'src/services/cookie.service';
 
 @WebSocketGateway({
@@ -10,6 +10,7 @@ import { CookieService } from 'src/services/cookie.service';
     origin: process.env.CLIENT_URL,
     credentials: true,
   },
+  namespace: '/chat',
 })
 export class ChatGateway {
 
@@ -36,7 +37,6 @@ export class ChatGateway {
     const roomId = this.getUsersRoom(body.userEmail, body.otherUserEmail);
 
     socket.join(roomId);
-    console.log(roomId)
 
     const user = await this.userRepository.findOne({ email: body.userEmail });
 
@@ -59,7 +59,6 @@ export class ChatGateway {
   @SubscribeMessage('leave')
   handleLeave(@MessageBody() body: { userEmail: string, otherUserEmail: string }, @ConnectedSocket() socket: Socket) {
     const roomId = this.getUsersRoom(body.userEmail, body.otherUserEmail);
-    console.log(roomId)
 
     socket.leave(roomId);
   }
@@ -67,8 +66,7 @@ export class ChatGateway {
   @SubscribeMessage('message')
   async handleMessage(@MessageBody() body: { message: string, userEmail: string, to: string }, @ConnectedSocket() socket: Socket) {
     // const socketAuth = this.cookieService.getCookies(socket.handshake.headers.cookie)
-
-    console.log(socket.rooms)
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
     const user = await this.userRepository.findOne({ email: body.userEmail })
     const otherUser = await this.userRepository.findOne({ email: body.to })
