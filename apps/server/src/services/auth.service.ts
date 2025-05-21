@@ -14,11 +14,6 @@ export class AuthService {
     }
 
     public async decodeToken(token: string) {
-        const ticket = await this.OAuth.verifyIdToken({
-            idToken: token,
-            audience: process.env.AUTH_GOOGLE_ID,
-        })
-
-        return ticket.getPayload()
+        return await this.jwtService.decode(token)
     }
 }

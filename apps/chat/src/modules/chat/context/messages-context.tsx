@@ -13,7 +13,8 @@ import {
 import type { Message } from "../interfaces";
 import { useParams } from "next/navigation";
 import { useSocket } from "openjs-chat/react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/modules/auth/context/session-provider";
+import { isUUID } from "@/lib/utils";
 
 const MessagesContext = createContext<{
 	messages: Message[];
@@ -23,6 +24,7 @@ const MessagesContext = createContext<{
 } | null>(null);
 
 export function MessagesProvider({ children }: { children: React.ReactNode }) {
+	const session = useSession();
 	const viewportRef = useRef<HTMLDivElement>(null);
 	const [messages, setMessages] = useState<Message[]>([]);
 	const { username } = useParams();
@@ -30,14 +32,13 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
 	const id = useId();
 
 	const { emit, socket } = useSocket();
-	const { data: session } = useSession();
 
 	const [optimisticMessages, addOptimisticMessage] = useOptimistic(
 		messages,
 		(state, newMessage: string) => [
 			...state,
 			{
-				from: myId,
+				fromUserId: myId,
 				text: newMessage,
 				id: `optimistic-${id}`,
 			} as Message,
@@ -50,15 +51,31 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
 			return;
 		}
 
+		if (!session) {
+			console.log("No session");
+			return;
+		}
+
+		if (!username) {
+			console.log("No username");
+			return;
+		}
+
 		if (viewportRef?.current) {
 			viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
 		}
 
-		const parsedUsername = username?.toString().replaceAll("%40", "@");
+		let target = "";
+		const isGroup = isUUID.safeParse(username?.toString());
+		if (isGroup.success) {
+			target = username?.toString();
+		} else {
+			target = username?.toString().replaceAll("%40", "@");
+		}
 
 		socket.emit("join", {
-			userEmail: session?.user?.email,
-			otherUserEmail: parsedUsername,
+			userId: session?.user?.id,
+			otherUserEmail: target,
 		});
 
 		socket.on(
@@ -80,8 +97,8 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
 					// Verificar si ya existe un mensaje optimista con el mismo contenido
 					const existingOptimisticMsg = prev.find(
 						(msg) =>
-							msg.from === message.from &&
-							msg.to === message.to &&
+							msg.fromUserId === message.fromUserId &&
+							msg.targetId === message.targetId &&
 							msg.text === message.text &&
 							msg.id.startsWith("optimistic-"),
 					);
@@ -106,11 +123,11 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
 
 		return () => {
 			emit("leave", {
-				userEmail: session?.user?.email,
-				otherUserEmail: parsedUsername,
+				userId: session?.user?.id,
+				otherUserEmail: target,
 			});
 		};
-	}, [socket]);
+	}, [socket, session]);
 
 	return (
 		<MessagesContext

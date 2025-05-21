@@ -2,16 +2,7 @@ import type { Metadata } from "next";
 
 import { Geist, Geist_Mono } from "next/font/google";
 
-import { AppSidebar as Sidebar } from "@/components/sidebar";
-import { SessionProvider } from "next-auth/react";
-
 import "./globals.css";
-import { auth } from "@/auth";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { Suspense } from "react";
-import { Toaster } from "@/components/ui/sonner";
-
-import { SocketProvider } from "openjs-chat/react";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -43,40 +34,18 @@ export const metadata: Metadata = {
 	},
 };
 
-async function RootLayoutContent({
+export default async function RootLayoutContent({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const session = await auth();
-
 	return (
 		<html lang="en">
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased font-[family-name:var(--font-geist-sans)] flex h-screen w-full overflow-hidden`}
 			>
-				<SocketProvider uri={`${process.env.SERVER_API}/chat`}>
-					<SessionProvider session={session}>
-						<SidebarProvider>
-							<Sidebar />
-							{children}
-						</SidebarProvider>
-					</SessionProvider>
-				</SocketProvider>
-				<Toaster />
+				{children}
 			</body>
 		</html>
-	);
-}
-
-export default async function RootLayout({
-	children,
-}: Readonly<{
-	children: React.ReactNode;
-}>) {
-	return (
-		<Suspense>
-			<RootLayoutContent>{children}</RootLayoutContent>
-		</Suspense>
 	);
 }

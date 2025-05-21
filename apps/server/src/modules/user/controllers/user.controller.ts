@@ -1,8 +1,6 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, UseInterceptors, } from '@nestjs/common';
+import { Controller, Get, Request, UseInterceptors, } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { ResponseInterceptor } from 'src/interceptors/response.interceptor';
-import { CreateUserDto, UserDto } from '../dtos/user.dto';
-import { AuthService } from 'src/services/auth.service';
 
 @UseInterceptors(ResponseInterceptor)
 @Controller('user')
@@ -10,36 +8,16 @@ export class UserController {
 
     constructor(
         private readonly userRepository: UserRepository,
-        private readonly authService: AuthService,
     ) { }
 
-    @Get(':id')
-    async getUser(@Param('id') id: string) {
-        const user = await this.userRepository.findOne({ email: id })
-        return user
-    }
-
-    @Get()
-    async getUsers() {
-        const users = await this.userRepository.find()
-        return users
-    }
-
-    @Post()
-    async createUser(@Body() body: CreateUserDto & { access_token: string }) {
-        const payload = await this.authService.decodeToken(body.access_token)
-        const googleId = String(payload.sub)
-
-        const user = await this.userRepository.findOne({ email: body.email })
-
-        if (!user) {
-            await this.userRepository.create({ ...body, googleId, avatar: payload.picture })
-            return
-        }
-
-        if (!user.avatar) {
-            await this.userRepository.update(user.id, { avatar: payload.picture })
-            return
+    @Get('profile')
+    async getProfile(@Request() req: { user: { userId: string, username: string } }) {
+        const user = await this.userRepository.findOne({ id: req.user.userId })
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
         }
     }
 

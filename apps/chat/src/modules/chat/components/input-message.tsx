@@ -6,14 +6,15 @@ import { Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 import { useChat } from "openjs-chat/react";
-import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useMessages } from "../context/messages-context";
+import { useSession } from "@/modules/auth/context/session-provider";
+import { isUUID } from "@/lib/utils";
 
 export function InputMessage() {
 	const { addMessage } = useMessages();
 	const { sendMessage } = useChat();
-	const { data: session } = useSession();
+	const session = useSession();
 
 	const [input, setInput] = useState("");
 	const { username } = useParams();
@@ -27,25 +28,32 @@ export function InputMessage() {
 				return;
 			}
 
-			if (!session.user?.email) {
+			if (!session.user?.id) {
 				console.log("No user email");
 				return;
 			}
 
-			const parsedUsername = username?.toString().replaceAll("%40", "@");
-
-			if (!parsedUsername) {
+			if (!username) {
 				console.log("No username");
 				return;
+			}
+
+			let target = "";
+			const isGroup = isUUID.safeParse(username?.toString());
+			if (isGroup.success) {
+				target = username?.toString();
+			} else {
+				target = username?.toString().replaceAll("%40", "@");
 			}
 
 			addMessage(input);
 			setInput("");
 
 			sendMessage({
-				userEmail: session.user?.email,
-				to: parsedUsername,
+				userId: session.user?.id,
+				to: target,
 				message: input,
+				isGroup: isGroup.success,
 			});
 		});
 

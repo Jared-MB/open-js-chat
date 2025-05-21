@@ -3,7 +3,12 @@ import { Server, Socket } from 'socket.io';
 
 import { MessageRepository } from './message.repository';
 import { UserRepository } from 'src/modules/user/repositories/user.repository';
-import { CookieService } from 'src/services/cookie.service';
+
+import { z } from 'zod'
+import { GroupRepository } from 'src/modules/groups/repositories/group.repository';
+import { GroupsService } from 'src/modules/groups/services/groups.service';
+
+const isUUID = z.string().uuid();
 
 @WebSocketGateway({
   cors: {
@@ -20,7 +25,8 @@ export class ChatGateway {
   constructor(
     private readonly messageRepository: MessageRepository,
     private readonly userRepository: UserRepository,
-    private readonly cookieService: CookieService,
+    private readonly groupsService: GroupsService,
+    private readonly groupRepository: GroupRepository,
   ) { }
 
   private getUsersRoom(userId: string, otherUserId: string) {
@@ -33,14 +39,28 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('join')
-  async handleJoin(@MessageBody() body: { userEmail: string, otherUserEmail: string }, @ConnectedSocket() socket: Socket) {
-    const roomId = this.getUsersRoom(body.userEmail, body.otherUserEmail);
+  async handleJoin(@MessageBody() body: { userId: string, otherUserEmail: string }, @ConnectedSocket() socket: Socket) {
+    const user = await this.userRepository.findOne({ id: body.userId });
+
+    const isGroup = isUUID.safeParse(body.otherUserEmail);
+
+    if (isGroup.success) {
+      const group = await this.groupsService.isInGroup(body.userId, body.otherUserEmail);
+      if (!group) {
+        return
+      }
+
+      socket.join(body.otherUserEmail);
+      const messages = await this.messageRepository.findAllByGroup(body.otherUserEmail);
+      socket.emit('join', { user, messages, myId: user.id });
+      return
+    }
+
+    const roomId = this.getUsersRoom(user.email, body.otherUserEmail);
 
     socket.join(roomId);
 
-    const user = await this.userRepository.findOne({ email: body.userEmail });
-
-    if (user.isBanned) {
+    if (user?.isBanned) {
       socket.leave(roomId);
       return
     }
@@ -57,23 +77,40 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('leave')
-  handleLeave(@MessageBody() body: { userEmail: string, otherUserEmail: string }, @ConnectedSocket() socket: Socket) {
-    const roomId = this.getUsersRoom(body.userEmail, body.otherUserEmail);
+  async handleLeave(@MessageBody() body: { userId: string, otherUserEmail: string }, @ConnectedSocket() socket: Socket) {
+    const user = await this.userRepository.findOne({ id: body.userId });
+
+    const isGroup = isUUID.safeParse(body.otherUserEmail);
+
+    if (isGroup.success) {
+      socket.leave(body.otherUserEmail);
+      return
+    }
+
+    const roomId = this.getUsersRoom(user.email, body.otherUserEmail);
 
     socket.leave(roomId);
   }
 
   @SubscribeMessage('message')
-  async handleMessage(@MessageBody() body: { message: string, userEmail: string, to: string }, @ConnectedSocket() socket: Socket) {
+  async handleMessage(@MessageBody() body: { message: string, userId: string, to: string, isGroup: boolean }, @ConnectedSocket() socket: Socket) {
     // const socketAuth = this.cookieService.getCookies(socket.handshake.headers.cookie)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    const user = await this.userRepository.findOne({ email: body.userEmail })
-    const otherUser = await this.userRepository.findOne({ email: body.to })
+    const user = await this.userRepository.findOne({ id: body.userId })
+    let otherUser
+    if (!body.isGroup) {
+      otherUser = await this.userRepository.findOne({ email: body.to })
+    }
+    else {
+      otherUser = await this.groupRepository.findOne({ id: body.to })
+    }
 
-    const roomId = this.getUsersRoom(body.userEmail, body.to);
+    let roomId = this.getUsersRoom(user.email, body.to);
+    if (body.isGroup) {
+      roomId = body.to
+    }
 
-    if (user.isBanned || otherUser.isBanned) {
+    if (user?.isBanned || otherUser?.isBanned) {
       socket.leave(roomId);
       return
     }

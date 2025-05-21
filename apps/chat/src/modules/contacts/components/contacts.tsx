@@ -4,14 +4,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { SearchContactProvider } from "@/modules/contacts/context/search-contact";
 import { SearchContact } from "@/modules/contacts/components/search-contact";
-import { ContactsList } from "@/modules/contacts/components/contacts-list";
-import { AddContact } from "@/modules/contacts/components/add-contact";
+import {
+	ContactsList,
+	ContactsListSkeleton,
+} from "@/modules/contacts/components/contacts-list";
 import { getContacts } from "@/modules/contacts/actions/get";
-import { auth } from "@/auth";
-import { cookies } from "next/headers";
+import type { Contact } from "../interfaces";
+import { Suspense } from "react";
+import { ContactsMenu } from "@/modules/contacts/components/contacts-menu";
 
-export async function Contacts() {
-	const contacts = await getContacts();
+export function Contacts() {
+	const contacts = getContacts();
 
 	return (
 		<SearchContactProvider>
@@ -21,12 +24,22 @@ export async function Contacts() {
 						<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
 						<SearchContact />
 					</div>
-					<AddContact />
+					<ContactsMenu />
 				</header>
 				<ScrollArea className="h-[calc(100dvh-13rem)]">
-					<ContactsList contacts={contacts ?? []} />
+					<Suspense fallback={<ContactsListSkeleton />}>
+						<UserContacts contacts={contacts} />
+					</Suspense>
 				</ScrollArea>
 			</section>
 		</SearchContactProvider>
 	);
+}
+
+async function UserContacts({
+	contacts,
+}: { contacts: Promise<Contact[] | null> }) {
+	const userContacts = await contacts;
+
+	return <ContactsList contacts={userContacts ?? []} />;
 }

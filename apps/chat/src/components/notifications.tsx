@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, User2, X } from "lucide-react";
+import { Bell, MessagesSquare, User2, X } from "lucide-react";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { Button } from "./ui/button";
 import { useSession } from "next-auth/react";
@@ -15,19 +15,20 @@ import {
 import Link from "next/link";
 
 interface Notification {
-	id: number;
+	id: number | string;
 	from: string;
 	text: string;
-	type: "CONTACT_REQUEST" | "MESSAGE";
+	type: "CONTACT_REQUEST" | "MESSAGE" | "GROUP_JOINED";
 }
 
 export function Notifications() {
 	const [unread, setUnread] = useState(0);
 	const [notifications, setNotifications] = useState<Notification[]>([]);
 
-	const { data: session } = useSession();
-	const { contactRequests, acceptedContactRequests } = useContact();
+	const { contactRequests, acceptedContactRequests, groupsJoined, id } =
+		useContact();
 
+	const prevGroupsJoinedLength = useRef(groupsJoined.length);
 	const prevContactRequestsLength = useRef(contactRequests.length);
 	const prevAcceptedContactRequestsLength = useRef(
 		acceptedContactRequests.length,
@@ -89,19 +90,47 @@ export function Notifications() {
 		prevAcceptedContactRequestsLength.current = acceptedContactRequests.length;
 	}, [acceptedContactRequests]);
 
+	useEffect(() => {
+		if (groupsJoined.length > prevGroupsJoinedLength.current) {
+			const lastGroupJoined = groupsJoined.at(-1);
+
+			if (id === lastGroupJoined?.createdBy.id) {
+				refetchContacts();
+				return;
+			}
+
+			setUnread((prev) => prev + 1);
+
+			const notification: Notification = {
+				id: lastGroupJoined?.id ?? "",
+				from: lastGroupJoined?.createdBy?.name ?? "",
+				text: "te ha unido a un grupo",
+				type: "GROUP_JOINED",
+			};
+
+			setNotifications((prev) => [notification, ...prev]);
+
+			toast.info(
+				<div>
+					<strong>{lastGroupJoined?.createdBy?.name}</strong> te ha unido a un
+					grupo
+				</div>,
+			);
+			refetchContacts();
+		}
+
+		prevGroupsJoinedLength.current = groupsJoined.length;
+	}, [groupsJoined]);
+
 	const handleClick = () => {
 		setUnread(0);
 	};
 
-	const dismissNotification = (id: number) => {
+	const dismissNotification = (id: number | string) => {
 		setNotifications((prev) =>
 			prev.filter((notification) => notification.id !== id),
 		);
 	};
-
-	if (!session || !session.user) {
-		return null;
-	}
 
 	return (
 		<Popover>
@@ -191,8 +220,10 @@ export function Notifications() {
 									</button>
 									<div className="flex items-center gap-4">
 										<div className="bg-primary/10 p-2 rounded-full">
-											{notification.type === "CONTACT_REQUEST" && (
+											{notification.type === "CONTACT_REQUEST" ? (
 												<User2 className="size-6" />
+											) : (
+												<MessagesSquare className="size-6" />
 											)}
 										</div>
 										<p className="text-sm text-pretty">
@@ -202,7 +233,11 @@ export function Notifications() {
 									</div>
 									<div>
 										<Button variant="outline" size="sm" asChild>
-											<Link href="/profile/contact-requests">Ver más</Link>
+											{notification.type === "GROUP_JOINED" ? (
+												<Link href={`/chat/${notification.id}`}>Ver más</Link>
+											) : (
+												<Link href="/profile/contact-requests">Ver más</Link>
+											)}
 										</Button>
 									</div>
 								</motion.div>

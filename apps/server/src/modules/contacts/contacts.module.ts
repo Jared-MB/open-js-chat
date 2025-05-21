@@ -10,9 +10,10 @@ import { ContactsRequestsController } from "./controllers/contacts-requests.cont
 import { ContactsController } from "./controllers/contacts.controller";
 import { AuthService } from "src/services/auth.service";
 import { ContactsRepository } from "./repositories/contacts.repository";
+import { GroupsModule } from "../groups/groups.module";
 
 @Module({
-    imports: [UserModule],
+    imports: [UserModule, GroupsModule],
     controllers: [ContactsController, ContactsRequestsController],
     providers: [ContactsRequestsRepository, ContactsRepository, ContactsGateway, AuthService],
 })

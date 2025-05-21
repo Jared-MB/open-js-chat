@@ -13,9 +13,18 @@ export class MessageRepository {
             .from(messages)
             .where(
                 or(
-                    eq(messages.from, userId),
-                    eq(messages.to, userId),
+                    eq(messages.fromUserId, userId),
+                    eq(messages.targetId, userId),
                 ),
+            );
+    }
+
+    async findAllByGroup(groupId: string) {
+        return await this.db
+            .select()
+            .from(messages)
+            .where(
+                eq(messages.targetId, groupId),
             );
     }
 
@@ -26,24 +35,25 @@ export class MessageRepository {
             .where(
                 or(
                     and(
-                        eq(messages.from, userId),
-                        eq(messages.to, to),
+                        eq(messages.fromUserId, userId),
+                        eq(messages.targetId, to),
                     ),
                     and(
-                        eq(messages.from, to),
-                        eq(messages.to, userId),
+                        eq(messages.fromUserId, to),
+                        eq(messages.targetId, userId),
                     ),
                 )
             );
     }
 
-    async create({ from, to, text }) {
+    async create({ from, to, text, targetType = 'user' }: { from: string, to: string, text: string, targetType?: 'user' | 'group' }) {
         return await this.db
             .insert(messages)
             .values({
-                from,
-                to,
+                fromUserId: from,
+                targetId: to,
                 text,
+                targetType
             })
             .returning();
     }

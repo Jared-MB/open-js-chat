@@ -17,50 +17,50 @@ export class ContactsRepository implements Repository<ContactDto> {
 
     private db = db
 
-    public async create({ user, contact }: CreateContactDto) {
+    public async create({ otherUserId, userId }: CreateContactDto) {
         return this.db.insert(contacts).values({
-            user,
-            contact
+            otherUserId,
+            userId
         }).returning()
     }
 
-    public async find(filter?: { user?: string, contact?: string }): Promise<ContactDto[]> {
+    public async find(filter?: { userId?: string, otherUserId?: string }): Promise<ContactDto[]> {
         if (!filter) {
             return await this.db.select().from(contacts)
         }
 
-        if (filter.user && filter.contact) {
+        if (filter.userId && filter.otherUserId) {
             console.log('both')
             return await this.db.select().from(contacts).where(
                 or(
                     and(
-                        eq(contacts.user, filter.user),
-                        eq(contacts.contact, filter.contact)
+                        eq(contacts.userId, filter.userId),
+                        eq(contacts.otherUserId, filter.otherUserId)
                     ),
                     and(
-                        eq(contacts.user, filter.contact),
-                        eq(contacts.contact, filter.user)
+                        eq(contacts.userId, filter.otherUserId),
+                        eq(contacts.otherUserId, filter.userId)
                     )
                 )
             )
         }
 
-        if (filter.user) {
-            console.log('user')
+        if (filter.userId) {
+            console.log(filter.userId)
             return await this.db.select().from(contacts).where(
                 or(
-                    eq(contacts.user, filter.user),
-                    eq(contacts.contact, filter.user)
+                    eq(contacts.userId, filter.userId),
+                    eq(contacts.otherUserId, filter.userId)
                 )
             )
         }
 
-        if (filter.contact) {
+        if (filter.otherUserId) {
             console.log('contact')
             return await this.db.select().from(contacts).where(
                 or(
-                    eq(contacts.contact, filter.contact),
-                    eq(contacts.user, filter.contact)
+                    eq(contacts.otherUserId, filter.otherUserId),
+                    eq(contacts.userId, filter.otherUserId)
                 )
             )
         }
@@ -68,7 +68,7 @@ export class ContactsRepository implements Repository<ContactDto> {
         return []
     }
 
-    public async findOne(filter: { user?: string, contact?: string }): Promise<ContactDto> {
+    public async findOne(filter: { userId?: string, otherUserId?: string }): Promise<ContactDto> {
         const contacts = await this.find(filter)
 
         if (contacts.length === 0) {

@@ -1,7 +1,8 @@
 export interface ChatMessage {
-    userEmail: string
+    userId: string
     to: string
     message: string
+    isGroup: boolean
 }
 
 export interface ContactRequest {

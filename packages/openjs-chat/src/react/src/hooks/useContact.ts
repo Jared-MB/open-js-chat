@@ -9,9 +9,9 @@ export const useContact = () => {
     const { uri, socket } = useSocket()
     const context = useContext(ContactsContext)
 
-    const sendContactRequest = ({ userEmail, otherUserEmail }: { userEmail: string, otherUserEmail: string }) => {
+    const sendContactRequest = ({ userId, otherUserEmail }: { userId: string, otherUserEmail: string }) => {
         socket?.emit('contact-request', {
-            userEmail,
+            userId,
             otherUserEmail
         })
     }

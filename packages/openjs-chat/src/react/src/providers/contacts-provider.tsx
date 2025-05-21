@@ -9,6 +9,14 @@ export const ContactsContext = createContext<{
 	id: string;
 	contactRequests: ContactRequest[];
 	acceptedContactRequests: ContactRequest[];
+	groupsJoined: {
+		name: string;
+		id: string;
+		createdBy: {
+			id: string;
+			name: string;
+		};
+	}[];
 } | null>(null);
 
 export const ContactsProvider = ({
@@ -19,6 +27,17 @@ export const ContactsProvider = ({
 	const [contactRequests, setContactRequests] = useState<ContactRequest[]>([]);
 	const [acceptedContactRequests, setAcceptedContactRequests] = useState<
 		ContactRequest[]
+	>([]);
+
+	const [groupsJoined, setGroupsJoined] = useState<
+		{
+			name: string;
+			id: string;
+			createdBy: {
+				id: string;
+				name: string;
+			};
+		}[]
 	>([]);
 
 	useEffect(() => {
@@ -33,6 +52,10 @@ export const ContactsProvider = ({
 		socket.on("contact-request:accept", (data) => {
 			setAcceptedContactRequests((prev) => [...prev, data]);
 		});
+
+		socket.on("new-group", (data) => {
+			setGroupsJoined((prev) => [...prev, data]);
+		});
 	}, [socket, id]);
 
 	if (!uri.includes("/contacts")) {
@@ -42,7 +65,9 @@ export const ContactsProvider = ({
 	}
 
 	return (
-		<ContactsContext value={{ id, contactRequests, acceptedContactRequests }}>
+		<ContactsContext
+			value={{ id, contactRequests, acceptedContactRequests, groupsJoined }}
+		>
 			{children}
 		</ContactsContext>
 	);

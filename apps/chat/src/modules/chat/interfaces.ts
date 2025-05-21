@@ -1,8 +1,8 @@
 export interface Message {
 	id: string;
 	text: string;
-	from: string;
-	to: string;
+	fromUserId: string;
+	targetId: string;
 	date: Date;
 	read: boolean;
 }

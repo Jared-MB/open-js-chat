@@ -3,12 +3,14 @@
 import { POST } from "@kristall/http"
 import { refetchContacts, refetchContactsRequests } from "./get"
 
-export const manageContactRequest = async (contactEmail: string, type: 'accept' | 'reject') => {
+export const manageContactRequest = async (contactId: string, type: 'accept' | 'reject') => {
 
-    await POST('/contacts-requests/manage', {
-        contactEmail,
+    const response = await POST('/contacts-requests/manage', {
+        contactId,
         type
     })
+
+    console.log(response)
 
     await Promise.all([
         refetchContacts(),

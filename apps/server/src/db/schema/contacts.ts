@@ -1,25 +1,23 @@
-import { pgTable, timestamp, uuid, boolean, text } from 'drizzle-orm/pg-core'
-import { relations } from 'drizzle-orm';
-import { users } from './users';
+import { pgTable, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { users } from './users'
+import { relations } from 'drizzle-orm'
 
 export const contacts = pgTable('contacts', {
     id: uuid().defaultRandom().primaryKey(),
-    user: text().notNull().references(() => users.email),
-    contact: text().notNull().references(() => users.email),
-    blockedByUser: boolean().default(false),
-    blockedByContact: boolean().default(false),
+    userId: uuid().notNull().references(() => users.id),
+    otherUserId: uuid().notNull().references(() => users.id),
     createdAt: timestamp({ mode: 'date' }).defaultNow(),
 })
 
 export const contactsRelations = relations(contacts, ({ one }) => ({
-    user: one(users, {
-        fields: [contacts.user],
-        references: [users.email],
+    users: one(users, {
+        fields: [contacts.userId],
+        references: [users.id],
         relationName: 'userContacts'
     }),
-    contact: one(users, {
-        fields: [contacts.contact],
-        references: [users.email],
+    otherUser: one(users, {
+        fields: [contacts.otherUserId],
+        references: [users.id],
         relationName: 'contactOf'
     }),
 }))

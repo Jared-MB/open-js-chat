@@ -6,6 +6,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { WebsocketModule } from 'src/modules/websockets/websocket.module';
 import { UserModule } from './modules/user/user.module';
 import { ContactsModule } from './modules/contacts/contacts.module';
+import { jwtConstants } from './modules/auth/constants';
+import { AuthModule } from './modules/auth/auth.module';
+import { AppController } from './app.controller';
+import { GroupsModule } from './modules/groups/groups.module';
 
 @Module({
   imports: [
@@ -15,7 +19,7 @@ import { ContactsModule } from './modules/contacts/contacts.module';
     }),
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET,
+      secret: jwtConstants.secret,
       signOptions: { expiresIn: '1d' },
     }),
     EventEmitterModule.forRoot({
@@ -27,9 +31,12 @@ import { ContactsModule } from './modules/contacts/contacts.module';
       verboseMemoryLeak: false,
       ignoreErrors: false,
     }),
+    AuthModule,
     WebsocketModule,
     UserModule,
-    ContactsModule
+    ContactsModule,
+    GroupsModule
   ],
+  controllers: [AppController],
 })
 export class AppModule { }

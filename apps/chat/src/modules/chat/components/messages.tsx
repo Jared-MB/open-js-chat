@@ -25,7 +25,7 @@ export function Messages() {
 			<main className="space-y-4">
 				<LayoutGroup>
 					{messages.map((message) => (
-						<Message key={message.id} {...message} email={myId} />
+						<Message key={message.id} {...message} id={myId} />
 					))}
 				</LayoutGroup>
 			</main>

@@ -1,12 +1,23 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Online } from "@/components/online";
 import { OutletHeader } from "@/components/outlet-header";
+import { getGroup } from "@/modules/contacts/actions/group";
+import { isUUID } from "@/lib/utils";
 
 export async function Contact({
 	params,
-}: { params: Promise<{ username: `${string}-${string}` }> }) {
-	const usernameSlug = (await params).username;
-	const username = usernameSlug.split("-")[0].replaceAll("%20", " ");
+}: { params: Promise<{ username: string }> }) {
+	const slug = (await params).username;
+
+	const isGroup = isUUID.safeParse(slug);
+	let displayChatName = "";
+
+	if (isGroup.success) {
+		const group = await getGroup(slug);
+		displayChatName = group.name;
+	} else {
+		displayChatName = slug.split("-")[0].replaceAll("%20", " ");
+	}
 
 	return (
 		<OutletHeader>
@@ -21,7 +32,7 @@ export async function Contact({
 				<Online />
 			</div>
 			<div className="flex-1">
-				<h2 className="font-semibold">{username}</h2>
+				<h2 className="font-semibold">{displayChatName}</h2>
 				<p className="text-xs text-muted-foreground">En línea</p>
 			</div>
 		</OutletHeader>

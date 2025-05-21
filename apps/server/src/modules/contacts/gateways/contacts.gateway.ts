@@ -27,13 +27,13 @@ export class ContactsGateway {
     }
 
     @SubscribeMessage('unsubscribe-requests')
-    async handleUnsubscribeRequests(@ConnectedSocket() socket: Socket, @MessageBody() body: { userEmail: string }) {
-        socket.leave(body.userEmail)
+    async handleUnsubscribeRequests(@ConnectedSocket() socket: Socket, @MessageBody() body: { id: string }) {
+        socket.leave(body.id)
     }
 
     @SubscribeMessage("contact-request")
-    async handleContactRequest(@ConnectedSocket() socket: Socket, @MessageBody() body: { userEmail: string, otherUserEmail: string }) {
-        const user = await this.userRepository.findOne({ email: body.userEmail })
+    async handleContactRequest(@ConnectedSocket() socket: Socket, @MessageBody() body: { userId: string, otherUserEmail: string }) {
+        const user = await this.userRepository.findOne({ id: body.userId })
         const otherUser = await this.userRepository.findOne({ email: body.otherUserEmail })
 
         if (!otherUser || !user) {
@@ -41,8 +41,8 @@ export class ContactsGateway {
         }
 
         const contactRequest = await this.contactsRequestsRepository.findOne({
-            sender: user.email,
-            receiver: otherUser.email,
+            sender: user.id,
+            receiver: otherUser.id,
         })
 
         if (contactRequest) {
@@ -54,11 +54,11 @@ export class ContactsGateway {
         }
 
         await this.contactsRequestsRepository.create({
-            sender: user.email,
-            receiver: otherUser.email,
+            sender: user.id,
+            receiver: otherUser.id,
         })
 
-        this.server.to(otherUser.email).emit('contact-request', {
+        this.server.to(otherUser.id).emit('contact-request', {
             id: user.email,
             username: user.name,
         })
@@ -69,15 +69,24 @@ export class ContactsGateway {
 
     @OnEvent('contacts.add')
     async handleContactsAdd(payload: {
-        contact: { email: string, name: string }, from: {
-            email: string,
-            name: string
-        }
+        contact: { email: string, name: string, id: string }
     }) {
-        console.log('contacts.add', payload)
-        this.server.to(payload.contact.email).emit('contact-request:accept', {
+        this.server.to(payload.contact.id).emit('contact-request:accept', {
             id: payload.contact.email,
             username: payload.contact.name,
         })
+    }
+
+    @OnEvent('group.add')
+    async handleGroupAdd(payload: {
+        users: string[],
+        group: {
+            name: string, id: string, createdBy: {
+                id: string,
+                name: string,
+            }
+        }
+    }) {
+        this.server.to(payload.users).emit('new-group', payload.group)
     }
 }

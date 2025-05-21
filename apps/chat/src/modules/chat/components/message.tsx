@@ -16,16 +16,8 @@ export interface ChatMessageProps {
 	image?: string;
 }
 
-export function Message({
-	to,
-	text,
-	date,
-	read,
-	from,
-	id,
-	email,
-}: M & { email: string }) {
-	const isUser = from === email;
+export function Message({ targetId, text, date, read, fromUserId, id }: M) {
+	const isUser = fromUserId === id;
 	const avatar = "";
 	const image = "";
 	const initials = "";
@@ -52,7 +44,7 @@ export function Message({
 			>
 				{!isUser && (
 					<Avatar className="h-8 w-8">
-						<AvatarImage src={avatar} alt={from} />
+						<AvatarImage src={avatar} alt={fromUserId} />
 						<AvatarFallback>{initials}</AvatarFallback>
 					</Avatar>
 				)}

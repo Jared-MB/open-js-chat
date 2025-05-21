@@ -8,6 +8,7 @@ import { Online } from "@/components/online";
 import type { Contact } from "@/modules/contacts/interfaces";
 import { useSearchContact } from "../context/search-contact";
 import { useMemo } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ContactsList({ contacts }: { contacts: Contact[] }) {
 	const { searchQuery } = useSearchContact();
@@ -23,7 +24,7 @@ export function ContactsList({ contacts }: { contacts: Contact[] }) {
 			{filteredContacts.map((contact) => (
 				<Link
 					key={contact.id}
-					href={`/chat/${contact.email}`}
+					href={`/chat/${contact.email ?? contact.id}`}
 					className="w-full text-left mb-1 p-3 rounded-lg transition-colors hover:bg-muted/50 flex items-center gap-3"
 				>
 					<div className="relative">
@@ -55,6 +56,31 @@ export function ContactsList({ contacts }: { contacts: Contact[] }) {
 						</div>
 					</div>
 				</Link>
+			))}
+		</div>
+	);
+}
+
+export function ContactsListSkeleton() {
+	return (
+		<div>
+			{Array.from({ length: 5 }).map((_, index) => (
+				<div
+					// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+					key={index}
+					className="w-full text-left mb-1 p-3 rounded-lg transition-colors hover:bg-muted/50 flex items-center gap-3"
+				>
+					<div className="relative">
+						<Avatar>
+							<AvatarFallback />
+						</Avatar>
+					</div>
+					<div className="flex-1 overflow-hidden">
+						<div className="flex justify-between items-center">
+							<Skeleton className="w-24 h-5" />
+						</div>
+					</div>
+				</div>
 			))}
 		</div>
 	);

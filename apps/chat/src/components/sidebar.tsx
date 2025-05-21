@@ -1,7 +1,5 @@
-import { Bell, Github } from "lucide-react";
+import { Github } from "lucide-react";
 import Link from "next/link";
-
-import { auth } from "@/auth";
 import {
 	SidebarHeader,
 	Sidebar,
@@ -15,14 +13,14 @@ import { Contacts } from "@/modules/contacts/components/contacts";
 import { UserProfile } from "./user-profile";
 import { Notifications } from "./notifications";
 import { ContactsProvider, SocketProvider } from "openjs-chat/react";
-import { Suspense } from "react";
+import { getSession } from "@/modules/auth/session";
 
 export async function AppSidebar() {
-	const session = await auth();
+	const session = await getSession();
 
 	return (
 		<SocketProvider uri={`${process.env.SERVER_API}/contacts`}>
-			<ContactsProvider id={session?.user?.email ?? ""}>
+			<ContactsProvider id={session?.id ?? ""}>
 				<Sidebar>
 					<SidebarHeader className="p-4 !flex-row items-center justify-between h-20 border-b">
 						<h1 className="text-xl font-bold flex items-center gap-2">
@@ -40,9 +38,7 @@ export async function AppSidebar() {
 						<Notifications />
 					</SidebarHeader>
 					<SidebarContent>
-						<Suspense fallback={<div>Loading...</div>}>
-							<AppSidebarContent />
-						</Suspense>
+						<Contacts />
 					</SidebarContent>
 					<SidebarFooter>
 						<UserProfile />
@@ -51,20 +47,4 @@ export async function AppSidebar() {
 			</ContactsProvider>
 		</SocketProvider>
 	);
-}
-
-async function AppSidebarContent() {
-	const session = await auth();
-
-	if (!session || !session.user) {
-		return (
-			<div className="grid place-content-center">
-				<p className="p-6 text-lg text-pretty">
-					Inicia sesión para comenzar a chatear con otros usuarios.
-				</p>
-			</div>
-		);
-	}
-
-	return <Contacts />;
 }

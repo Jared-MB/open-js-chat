@@ -7,6 +7,7 @@ export interface Contact {
     unread: number;
     online: boolean;
     email: string;
+    isGroup?: boolean
 }
 
 export interface ContactRequest {

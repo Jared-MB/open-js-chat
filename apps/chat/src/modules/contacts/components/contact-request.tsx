@@ -13,7 +13,7 @@ export function ContactRequest({ contactRequest }: { contactRequest: CR }) {
 
 	const handleClick = (type: "accept" | "reject") =>
 		startTransition(async () => {
-			await manageContactRequest(contactRequest.email, type);
+			await manageContactRequest(contactRequest.id, type);
 			toast.success("Contacto aceptado");
 		});
 
