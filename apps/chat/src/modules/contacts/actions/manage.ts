@@ -10,8 +10,6 @@ export const manageContactRequest = async (contactId: string, type: 'accept' | '
         type
     })
 
-    console.log(response)
-
     await Promise.all([
         refetchContacts(),
         refetchContactsRequests()

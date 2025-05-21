@@ -22,7 +22,6 @@ export class ContactsGateway {
 
     @SubscribeMessage('subscribe-requests')
     async handleListenRequests(@ConnectedSocket() socket: Socket, @MessageBody() body: string) {
-        console.log('subscribe-requests', body)
         socket.join(body)
     }
 

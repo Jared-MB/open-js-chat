@@ -18,8 +18,6 @@ export function SessionProvider({
 		queryFn: () => getSession(),
 	});
 
-	console.log(JSON.stringify(session, null, 2));
-
 	return <SessionContext value={{ user: session }}>{children}</SessionContext>;
 }
 

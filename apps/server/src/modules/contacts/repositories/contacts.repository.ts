@@ -5,13 +5,6 @@ import { db } from "src/db/connection";
 import { contacts } from "src/db/schema/contacts";
 import { and, eq, or } from "drizzle-orm";
 
-type ContactFilter = {
-    user?: string,
-    contactId?: string
-}
-
-const ALLOWED_KEYS = ['userId', 'contactId']
-
 @Injectable()
 export class ContactsRepository implements Repository<ContactDto> {
 
@@ -30,7 +23,6 @@ export class ContactsRepository implements Repository<ContactDto> {
         }
 
         if (filter.userId && filter.otherUserId) {
-            console.log('both')
             return await this.db.select().from(contacts).where(
                 or(
                     and(
@@ -46,7 +38,6 @@ export class ContactsRepository implements Repository<ContactDto> {
         }
 
         if (filter.userId) {
-            console.log(filter.userId)
             return await this.db.select().from(contacts).where(
                 or(
                     eq(contacts.userId, filter.userId),
@@ -56,7 +47,6 @@ export class ContactsRepository implements Repository<ContactDto> {
         }
 
         if (filter.otherUserId) {
-            console.log('contact')
             return await this.db.select().from(contacts).where(
                 or(
                     eq(contacts.otherUserId, filter.otherUserId),

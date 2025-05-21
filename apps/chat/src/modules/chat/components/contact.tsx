@@ -13,6 +13,7 @@ export async function Contact({
 	let displayChatName = "";
 
 	if (isGroup.success) {
+		console.log(slug);
 		const group = await getGroup(slug);
 		displayChatName = group.name;
 	} else {
