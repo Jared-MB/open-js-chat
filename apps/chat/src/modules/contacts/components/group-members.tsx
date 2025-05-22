@@ -32,7 +32,7 @@ export function GroupMembers({ id }: { id: string }) {
 				<DropdownMenuSeparator />
 				{groupMembers?.map((member) => (
 					<DropdownMenuItem key={member.userId} className="justify-between">
-						<div className="flex items-center gap-2">
+						<div className="flex flex-col items-start gap-2">
 							<span className="font-medium">{member.username}</span>
 							<span>{member.email}</span>
 						</div>
