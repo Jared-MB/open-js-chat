@@ -27,14 +27,14 @@ export function GroupMembers({ id }: { id: string }) {
 					<Users />
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="w-64">
+			<DropdownMenuContent className="w-72">
 				<DropdownMenuLabel>Miembros</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				{groupMembers?.map((member) => (
 					<DropdownMenuItem key={member.userId} className="justify-between">
-						<div className="flex flex-col items-start gap-2">
+						<div className="flex flex-col items-start gap-1">
 							<span className="font-medium">{member.username}</span>
-							<span>{member.email}</span>
+							<span className="text-sm">{member.email}</span>
 						</div>
 						{member.isAdmin && <Badge variant="secondary">Administrador</Badge>}
 					</DropdownMenuItem>
