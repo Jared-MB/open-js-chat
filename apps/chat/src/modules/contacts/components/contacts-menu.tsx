@@ -39,16 +39,18 @@ export function ContactsMenu() {
 					</DropdownMenuGroup>
 				</DropdownMenuContent>
 			</DropdownMenu>
-			<CreateGroupDialog
-				open={createGroupOpen}
-				onOpenChange={setCreateGroupOpen}
-				onCreateGroup={async (name, members) => {
-					await createGroup({
-						name,
-						users: members.map((member) => member.id),
-					});
-				}}
-			/>
+			{createGroupOpen && (
+				<CreateGroupDialog
+					open={createGroupOpen}
+					onOpenChange={setCreateGroupOpen}
+					onCreateGroup={async (name, members) => {
+						await createGroup({
+							name,
+							users: members.map((member) => member.id),
+						});
+					}}
+				/>
+			)}
 		</>
 	);
 }

@@ -3,6 +3,7 @@ import { Online } from "@/components/online";
 import { OutletHeader } from "@/components/outlet-header";
 import { getGroup } from "@/modules/contacts/actions/group";
 import { isUUID } from "@/lib/utils";
+import { GroupMembers } from "@/modules/contacts/components/group-members";
 
 export async function Contact({
 	params,
@@ -13,7 +14,6 @@ export async function Contact({
 	let displayChatName = "";
 
 	if (isGroup.success) {
-		console.log(slug);
 		const group = await getGroup(slug);
 		displayChatName = group.name;
 	} else {
@@ -36,6 +36,7 @@ export async function Contact({
 				<h2 className="font-semibold">{displayChatName}</h2>
 				<p className="text-xs text-muted-foreground">En línea</p>
 			</div>
+			{isGroup.success && <GroupMembers id={slug} />}
 		</OutletHeader>
 	);
 }

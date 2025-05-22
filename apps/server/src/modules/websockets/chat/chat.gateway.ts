@@ -52,7 +52,6 @@ export class ChatGateway {
 
       socket.join(body.otherUserEmail);
       const messages = await this.messageRepository.findAllByGroup(body.otherUserEmail);
-      console.log({ user })
       socket.emit('join', { user, messages, myId: user.id });
       return
     }

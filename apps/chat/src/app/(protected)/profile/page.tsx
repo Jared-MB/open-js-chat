@@ -8,6 +8,9 @@ import {
 import { getSession } from "@/modules/auth/session";
 import { unstable_ViewTransition as ViewTransition } from "react";
 
+export const dynamic = "force-dynamic";
+export const experimental_ppr = false;
+
 export default async function ProfilePage() {
 	const session = await getSession();
 

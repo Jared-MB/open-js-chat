@@ -5,6 +5,9 @@ import { Contact } from "@/modules/chat/components/contact";
 import { Messages } from "@/modules/chat/components/messages";
 import { MessagesProvider } from "@/modules/chat/context/messages-context";
 
+export const dynamic = "force-dynamic";
+export const experimental_ppr = false;
+
 export default function ChatPage({
 	params,
 }: { params: Promise<{ username: string }> }) {

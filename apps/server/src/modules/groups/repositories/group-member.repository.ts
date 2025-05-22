@@ -34,6 +34,12 @@ export class GroupMemberRepository implements Repository<GroupMemberDto> {
             );
         }
 
+        if (filter?.groupId) {
+            return await this.db.select().from(groupMembers).where(
+                eq(groupMembers.groupId, filter.groupId)
+            );
+        }
+
         return await this.db.select().from(groupMembers);
 
     }

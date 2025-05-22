@@ -5,10 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/modules/auth/login";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
 	const [state, dispatch, isLoading] = useActionState(login, undefined);
+
+	useEffect(() => {
+		if (state?.error) {
+			toast.error(state.error);
+		}
+	}, [state]);
 
 	return (
 		<aside className="w-md border-r border-r-sidebar-border bg-sidebar p-12 flex justify-center items-center">
@@ -29,7 +36,13 @@ export default function LoginPage() {
 							placeholder="m@example.com"
 							required
 							disabled={isLoading}
+							defaultValue={state?.fields?.email?.value.toString()}
 						/>
+						{state?.fields?.email.message && (
+							<p className="text-red-500 text-sm">
+								{state.fields.email.message}
+							</p>
+						)}
 					</div>
 					<div className="grid gap-2">
 						<div className="flex items-center">
@@ -45,10 +58,17 @@ export default function LoginPage() {
 							id="password"
 							name="password"
 							type="password"
+							minLength={4}
 							required
 							placeholder="* * * * * * * *"
 							disabled={isLoading}
+							defaultValue={state?.fields?.password?.value.toString()}
 						/>
+						{state?.fields?.password.message && (
+							<p className="text-red-500 text-sm">
+								{state.fields.password.message}
+							</p>
+						)}
 					</div>
 					<Button type="submit" className="w-full" disabled={isLoading}>
 						{!isLoading ? "Iniciar sesión" : "Iniciando sesión..."}

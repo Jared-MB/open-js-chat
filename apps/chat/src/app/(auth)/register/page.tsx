@@ -5,10 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { register } from "@/modules/auth/register";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
 	const [state, dispatch, isLoading] = useActionState(register, undefined);
+
+	useEffect(() => {
+		if (state?.error) {
+			toast.error(state.error);
+		}
+	}, [state]);
 
 	return (
 		<aside className="w-md border-r border-r-sidebar-border bg-sidebar p-12 flex justify-center items-center">
@@ -29,7 +36,13 @@ export default function RegisterPage() {
 							placeholder="m@example.com"
 							disabled={isLoading}
 							required
+							defaultValue={state?.fields?.email?.value.toString()}
 						/>
+						{state?.fields?.email.message && (
+							<p className="text-red-500 text-sm">
+								{state.fields.email.message}
+							</p>
+						)}
 					</div>
 					<div className="grid gap-2">
 						<Label htmlFor="name">Nombre</Label>
@@ -40,6 +53,7 @@ export default function RegisterPage() {
 							placeholder="username"
 							required
 							disabled={isLoading}
+							defaultValue={state?.fields?.name?.value.toString()}
 						/>
 					</div>
 					<div className="grid gap-2">
@@ -53,7 +67,13 @@ export default function RegisterPage() {
 							required
 							placeholder="* * * * * * * *"
 							disabled={isLoading}
+							defaultValue={state?.fields?.password?.value.toString()}
 						/>
+						{state?.fields?.password.message && (
+							<p className="text-red-500 text-sm">
+								{state.fields.password.message}
+							</p>
+						)}
 					</div>
 					<div className="grid gap-2">
 						<div className="flex items-center">
@@ -66,7 +86,13 @@ export default function RegisterPage() {
 							required
 							placeholder="* * * * * * * *"
 							disabled={isLoading}
+							defaultValue={state?.fields?.confirmPassword?.value.toString()}
 						/>
+						{state?.fields?.confirmPassword.message && (
+							<p className="text-red-500 text-sm">
+								{state.fields.confirmPassword.message}
+							</p>
+						)}
 					</div>
 					<Button type="submit" className="w-full" disabled={isLoading}>
 						{!isLoading ? "Crear cuenta" : "Creando cuenta..."}

@@ -36,7 +36,7 @@ export class AuthController {
         const user = await this.userRepository.findOne({ email })
 
         if (user) {
-            throw new BadRequestException()
+            throw new BadRequestException('El correo ya está registrado')
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)

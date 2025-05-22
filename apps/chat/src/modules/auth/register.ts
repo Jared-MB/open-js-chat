@@ -8,20 +8,48 @@ export const register = async (_prevState: unknown, payload: FormData) => {
 
     const { email, password, confirmPassword, name } = Object.fromEntries(payload.entries());
 
-    if (password !== confirmPassword) {
+    if (password.toString().length < 4) {
         return {
-            error: "Passwords do not match",
+            error: null,
             fields: {
                 email: {
+                    message: null,
                     value: email,
                 },
                 password: {
+                    message: 'La contraseña debe tener al menos 4 caracteres',
                     value: password,
                 },
                 confirmPassword: {
+                    message: null,
                     value: confirmPassword,
                 },
                 name: {
+                    message: null,
+                    value: name,
+                },
+            }
+        }
+    }
+
+    if (password !== confirmPassword) {
+        return {
+            error: null,
+            fields: {
+                email: {
+                    message: null,
+                    value: email,
+                },
+                password: {
+                    message: 'Las contraseñas no coinciden',
+                    value: password,
+                },
+                confirmPassword: {
+                    message: 'Las contraseñas no coinciden',
+                    value: confirmPassword,
+                },
+                name: {
+                    message: null,
                     value: name,
                 },
             }
@@ -36,6 +64,30 @@ export const register = async (_prevState: unknown, payload: FormData) => {
     }, {
         auth: false
     })
+
+    if (response.message.includes('correo')) {
+        return {
+            error: null,
+            fields: {
+                email: {
+                    message: 'El correo ya está registrado',
+                    value: email,
+                },
+                password: {
+                    message: null,
+                    value: password,
+                },
+                confirmPassword: {
+                    message: null,
+                    value: confirmPassword,
+                },
+                name: {
+                    message: null,
+                    value: name,
+                },
+            }
+        }
+    }
 
     if (response.status !== 200) {
         return {

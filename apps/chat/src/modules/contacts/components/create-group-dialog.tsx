@@ -16,23 +16,12 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { getContacts } from "../actions/get";
 
-// Tipo para los contactos
 type Contact = {
 	id: string;
 	name: string;
 	email: string;
 	avatar?: string;
 };
-
-// Datos de ejemplo - reemplazar con tus datos reales
-const mockContacts: Contact[] = [
-	{ id: "1", name: "Jared Test", email: "jared@example.com" },
-	{ id: "2", name: "Testing", email: "testing@example.com" },
-	{ id: "3", name: "Jared Muñoz", email: "jmunoz@example.com" },
-	{ id: "4", name: "Ana García", email: "ana@example.com" },
-	{ id: "5", name: "Carlos López", email: "carlos@example.com" },
-	{ id: "6", name: "María Rodríguez", email: "maria@example.com" },
-];
 
 interface CreateGroupDialogProps {
 	open: boolean;
@@ -52,13 +41,14 @@ export function CreateGroupDialog({
 	const { data: contacts } = useQuery({
 		queryKey: ["contacts"],
 		queryFn: () => getContacts(),
+		refetchOnMount: "always",
 	});
 
 	const filteredContacts = contacts?.filter(
 		(contact) =>
+			!contact?.isGroup &&
 			(contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				contact.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
-			!contact?.isGroup,
+				contact?.email.toLowerCase().includes(searchQuery.toLowerCase())),
 	);
 
 	const handleSelectContact = (contact: Contact) => {

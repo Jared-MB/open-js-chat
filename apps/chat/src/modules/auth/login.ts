@@ -15,14 +15,32 @@ export const login = async (_prevState: unknown, payload: FormData) => {
         auth: false
     })
 
+    if (response.status === 401) {
+        return {
+            error: null,
+            fields: {
+                email: {
+                    message: 'Email o contraseña incorrectos',
+                    value: email,
+                },
+                password: {
+                    message: 'Email o contraseña incorrectos',
+                    value: password,
+                },
+            }
+        }
+    }
+
     if (response.status !== 200) {
         return {
             error: response.message,
             fields: {
                 email: {
+                    message: '',
                     value: email,
                 },
                 password: {
+                    message: '',
                     value: password,
                 },
             }

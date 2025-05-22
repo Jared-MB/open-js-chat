@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import { format } from "@formkit/tempo";
 import { motion } from "motion/react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface ChatMessageProps {
 	sender: string;
@@ -16,7 +17,30 @@ export interface ChatMessageProps {
 	image?: string;
 }
 
-export function Message({ targetId, text, date, read, fromUserId, id }: M) {
+export function Message({
+	targetId,
+	text,
+	date,
+	read,
+	fromUserId,
+	id,
+	mode,
+	prevMessageFrom,
+}: M & {
+	mode: "user" | "group";
+	prevMessageFrom: string;
+}) {
+	const queryClient = useQueryClient();
+
+	const groupMembers =
+		queryClient.getQueryData<
+			{ userId: string; isAdmin: boolean; username: string; email: string }[]
+		>(["group-members", targetId]) ?? [];
+	const sendByMessage = groupMembers.find(
+		(member) => member.userId === fromUserId,
+	);
+
+	const isPreviousMessageFromSameUser = prevMessageFrom === fromUserId;
 	const isUser = fromUserId === id;
 	const avatar = "";
 	const image = "";
@@ -37,16 +61,23 @@ export function Message({ targetId, text, date, read, fromUserId, id }: M) {
 				ease: "easeInOut",
 			}}
 			layout
-			className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+			className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}
 		>
+			{mode === "group" && !isUser && !isPreviousMessageFromSameUser && (
+				<small className="text-muted-foreground my-1">
+					{sendByMessage?.username}
+				</small>
+			)}
 			<div
-				className={`flex ${isUser ? "flex-row-reverse" : "flex-row"} max-w-[80%] gap-2`}
+				className={`grid ${isUser ? "" : "grid-cols-[auto_1fr]"} max-w-[80%] gap-2`}
 			>
-				{!isUser && (
+				{!isUser && !isPreviousMessageFromSameUser ? (
 					<Avatar className="h-8 w-8">
 						<AvatarImage src={avatar} alt={fromUserId} />
 						<AvatarFallback>{initials}</AvatarFallback>
 					</Avatar>
+				) : (
+					<div className="w-8" />
 				)}
 				<div>
 					<div

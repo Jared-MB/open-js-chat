@@ -3,7 +3,6 @@
 import { Bell, MessagesSquare, User2, X } from "lucide-react";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { Button } from "./ui/button";
-import { useSession } from "next-auth/react";
 import { useContact } from "openjs-chat/react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -13,6 +12,7 @@ import {
 	refetchContactsRequests,
 } from "@/modules/contacts/actions/get";
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Notification {
 	id: number | string;
@@ -22,6 +22,8 @@ interface Notification {
 }
 
 export function Notifications() {
+	const queryClient = useQueryClient();
+
 	const [unread, setUnread] = useState(0);
 	const [notifications, setNotifications] = useState<Notification[]>([]);
 
@@ -96,6 +98,9 @@ export function Notifications() {
 
 			if (id === lastGroupJoined?.createdBy.id) {
 				refetchContacts();
+				queryClient.invalidateQueries({
+					queryKey: ["contacts"],
+				});
 				return;
 			}
 
@@ -116,6 +121,9 @@ export function Notifications() {
 					grupo
 				</div>,
 			);
+			queryClient.invalidateQueries({
+				queryKey: ["contacts"],
+			});
 			refetchContacts();
 		}
 
